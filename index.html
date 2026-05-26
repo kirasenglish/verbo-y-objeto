@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kira's English Studio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+    body { 
+      margin: 0; 
+      padding: 0; 
+      background-color: transparent; 
+      font-family: 'Montserrat', sans-serif; 
+      color: white; 
+      overflow-x: hidden;
+    }
+    
+    .main-container { 
+      padding: 15px; 
+      width: 100%; 
+      max-width: 1600px; /* Expanded layout max width for side-by-side presentation */
+      margin: 0 auto; 
+      box-sizing: border-box; 
+    }
+
+    /* --- SIDE-BY-SIDE RESPONSIVE FLEX CONTAINER --- */
+    .split-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      width: 100%;
+      align-items: flex-start;
+    }
+
+    .game-panel {
+      flex: 1;
+      min-width: 0; /* Prevents overflow issues within the flexbox system */
+    }
+
+    /* Fallback stack display mode for mobile systems */
+    @media (max-width: 1024px) {
+      .split-layout {
+        flex-direction: column;
+        gap: 30px;
+      }
+    }
+    /* ----------------------------------------------- */
+
+    .action-card {
+      background: #000;
+      border-left: 6px solid #D30000;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+    }
+
+    .header-title-container { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      border-bottom: 2.5px solid #D30000; 
+      padding-bottom: 8px; 
+      width: 100%; 
+      justify-content: space-between; 
+    }
+    
+    .logo-bracket {  
+      width: 42px; 
+      height: 42px; 
+      background: #000; 
+      border-left: 3.5px solid #D30000; 
+      border-radius: 5px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding-left: 4px; 
+      box-sizing: border-box; 
+    }
+    
+    .logo-bracket img { 
+      width: 34px; 
+      height: 34px; 
+      border-radius: 50%; 
+      object-fit: cover; 
+    }
+    
+    .header-left-group { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+    }
+    
+    .header-left-group h2 { 
+      color: #ffffff; 
+      font-size: 1rem; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+      margin: 0; 
+    }
+
+    #counter {
+      color: #888;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    select { 
+      background: #111; 
+      color: #fff; 
+      border: 1.5px solid #D30000; 
+      padding: 6px 10px; 
+      border-radius: 6px; 
+      font-family: 'Montserrat', sans-serif; 
+      cursor: pointer; 
+      font-weight: 700; 
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus {
+      border-color: #ff3333;
+    }
+
+    .exercise-block {
+      background: #111;
+      padding: 25px;
+      border-radius: 10px;
+      border: 1px solid #222;
+      box-sizing: border-box;
+      min-height: 480px; /* Uniform minimum sizing helper across games */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    /* --- GAME 1 SPECIFIC STYLES (Sentence Builder) --- */
+    .progress-container { 
+      width: 100%; 
+      background: #222; 
+      height: 4px; 
+      border-radius: 2px; 
+      margin-bottom: 20px; 
+      overflow: hidden; 
+    }
+    
+    .progress-bar { 
+      height: 100%; 
+      background: #D30000; 
+      width: 0%; 
+      transition: width 0.4s ease; 
+    }
+
+    .spanish-hint { 
+      font-size: 1rem; 
+      color: #fff; 
+      margin-bottom: 15px; 
+      font-weight: 700; 
+      background: #000; 
+      padding: 15px; 
+      border-radius: 8px; 
+      border: 1px solid #222;
+      text-align: center; 
+      line-height: 1.4;
+    }
+
+    .drop-zone {
+      min-height: 65px; 
+      width: 100%; 
+      border: 2px dashed #333; 
+      border-radius: 8px;
+      margin-bottom: 15px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      flex-wrap: wrap; 
+      gap: 10px; 
+      padding: 12px; 
+      background: #050505; 
+      box-sizing: border-box;
+    }
+
+    .drop-zone.is-correct { 
+      border: 2px solid #00FF00 !important; 
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.25); 
+    }
+
+    .word-bank { 
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: center; 
+      align-items: center;
+      gap: 10px; 
+      margin-bottom: 10px; 
+      width: 100%; 
+      min-height: 50px; 
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .tile {
+      background: #000; 
+      border: 1px solid #444; 
+      padding: 10px 16px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 700; 
+      color: #fff; 
+      font-size: 0.95rem;
+      user-select: none; 
+      transition: all 0.2s; 
+      text-align: center;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      touch-action: none;
+    }
+    
+    .tile:hover:not(.dragging) {
+      border-color: #888;
+      background: #050505;
+    }
+     
+    .tile.dragging { opacity: 0.4; transform: scale(0.9); }
+    .drop-zone .tile { border: 1.5px solid #D30000; background: #000; cursor: grab; }
+    .is-correct .tile { border-color: #00FF00 !important; color: #00FF00 !important; cursor: default; }
+
+    .feedback { 
+      margin-bottom: 15px; 
+      font-weight: 700; 
+      font-size: 0.85rem; 
+      min-height: 20px; 
+      width: 100%; 
+      text-align: center; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .correct-text { color: #00FF00; }
+    .wrong-text { color: #ff4a4a; }
+
+    .button-group { display: flex; gap: 10px; width: 100%; margin-top: auto; }
+     
+    .btn {
+      padding: 14px; 
+      border-radius: 8px; 
+      font-weight: 700; 
+      cursor: pointer;
+      text-transform: uppercase; 
+      border: none; 
+      font-family: 'Montserrat', sans-serif; 
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    
+    .btn-check { background: #D30000; color: white; flex: 2; }
+    .btn-check:hover { background: #b30000; }
+    .btn-next { background: #00FF00; color: #000; flex: 2; display: none; }
+    .btn-next:hover { background: #00cc00; }
+    .btn-reset-builder { background: #222; color: #aaa; flex: 1; border: 1px solid #333; }
+    .btn-reset-builder:hover { background: #333; color: #fff; }
+    .btn-perfect { background: #00FF00 !important; color: #000 !important; }
+
+    .finish-screen { text-align: center; padding: 20px 10px; width: 100%; animation: fadeIn 0.5s; margin-auto: auto; }
+    .finish-screen h3 { font-size: 1.4rem; font-weight: 700; margin: 0 0 10px 0; }
+    
+    .score-circle {
+      display: inline-block; 
+      width: 90px; 
+      height: 90px; 
+      border: 4px solid #00FF00;
+      border-radius: 50%; 
+      line-height: 90px; 
+      font-size: 2rem; 
+      font-weight: 700;
+      margin: 20px 0; 
+      color: #00FF00;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    }
+
+    /* --- GAME 2 SPECIFIC STYLES (Verb Matcher) --- */
+    .instruction-text { 
+      color: #888; 
+      font-size: 0.85rem; 
+      margin: 0 0 20px 0; 
+      text-align: center; 
+      font-style: italic; 
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    .game-area { 
+      display: flex; 
+      gap: 15px; 
+      justify-content: center; 
+      width: 100%;
+    }
+    
+    .column { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+    }
+
+    .word-btn { 
+      background: #000; 
+      border: 1px solid #333; 
+      padding: 12px 8px; 
+      color: #fff; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      text-align: center; 
+      font-weight: 700; 
+      font-size: 0.95rem; 
+      user-select: none; 
+      border-bottom: 3px solid #222; 
+      box-sizing: border-box; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      min-height: 52px; 
+      transition: all 0.2s; 
+      position: relative; 
+    }
+    
+    .word-btn:hover:not(.selected):not(.revealed-ph):not(.vanished) { border-color: #555; }
+    .word-btn.selected { border-color: #D30000; background: #400000; border-bottom-color: #D30000; }
+    
+    .word-btn.revealed-ph { 
+      background: #002b0c !important; 
+      border-color: #00FF00 !important; 
+      color: #00FF00 !important; 
+      font-size: 0.9rem; 
+      font-style: italic; 
+      font-weight: 700; 
+      cursor: default; 
+      border-bottom: 3px solid #00FF00; 
+    }
+    
+    .word-btn.vanished { visibility: hidden; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .word-btn.error { border-color: #ff4a4a; background: #421b1b; animation: shake 0.3s; }
+    
+    @keyframes shake { 
+      0%, 100% { transform: translateX(0); } 
+      25% { transform: translateX(-4px); } 
+      75% { transform: translateX(4px); } 
+    }
+
+    .win-message { 
+      display: none; 
+      text-align: center; 
+      padding: 20px 10px; 
+      animation: fadeIn 0.5s;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    
+    .win-message h3 { 
+      color: #00FF00; 
+      font-size: 1.6rem; 
+      font-weight: 700;
+      margin: 0 0 15px 0; 
+      text-transform: uppercase; 
+      letter-spacing: 1px;
+    }
+    
+    .btn-reset-matcher { 
+      background: #D30000; 
+      color: #fff; 
+      border: none; 
+      padding: 14px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 700; 
+      text-transform: uppercase; 
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem; 
+      letter-spacing: 0.5px;
+      width: 100%; 
+      transition: background 0.2s;
+    }
+    .btn-reset-matcher:hover { background: #b30000; }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Universal Media Query Tuning adjustments */
+    @media (max-width: 1200px) {
+      .action-card { padding: 20px; }
+      .tile { padding: 8px 12px; font-size: 0.85rem; }
+      .word-btn { font-size: 0.85rem; min-height: 48px; }
+    }
+
+    @media (max-width: 768px) {
+      .action-card { padding: 15px; border-left-width: 4px; }
+      .exercise-block { padding: 15px; min-height: auto; }
+      .logo-bracket { width: 36px; height: 36px; }
+      .logo-bracket img { width: 28px; height: 28px; }
+      .header-left-group h2 { font-size: 0.85rem; }
+      #counter { font-size: 0.8rem; }
+      select { padding: 5px 8px; font-size: 0.75rem; border-radius: 5px; }
+      .spanish-hint { font-size: 0.9rem; padding: 12px; margin-bottom: 12px; }
+      .drop-zone { min-height: 55px; padding: 8px; gap: 8px; margin-bottom: 12px; }
+      .word-bank { min-height: 44px; gap: 8px; }
+      .tile { padding: 8px 10px; font-size: 0.8rem; border-radius: 6px; }
+      .btn, .btn-reset-matcher { padding: 12px; font-size: 0.75rem; border-radius: 6px; }
+      .score-circle { width: 75px; height: 75px; line-height: 75px; font-size: 1.6rem; }
+      .instruction-text { font-size: 0.75rem; margin-bottom: 15px; }
+      .game-area { gap: 10px; }
+      .column { gap: 8px; }
+      .word-btn { padding: 10px 4px; font-size: 0.8rem; min-height: 44px; border-radius: 6px; border-bottom-width: 2px; }
+      .word-btn.revealed-ph { font-size: 0.75rem; border-bottom-width: 2px; }
+      .win-message h3 { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="split-layout">
+    
+    <div class="game-panel">
+      <div class="action-card" id="quiz-ui">
+        </div>
+    </div>
+
+    <div class="game-panel">
+      <div class="action-card">
+        <div class="section-header">
+          <div class="header-title-container">
+            <div class="header-left-group">
+              <div class="logo-bracket"><img src="https://drive.google.com/thumbnail?id=1DQWHMZf7MpnzZBa3CbqqyJGLQEK6U4lZ" alt="Kira"></div>
+              <h2>VERB MATCHER</h2>
+            </div>
+            <select id="category-select" onchange="resetCategoryAndInit()">
+              <option value="rutina">Rutina Diaria</option>
+              <option value="comunicacion">Comunicación</option>
+              <option value="movimiento">Movimiento</option>
+              <option value="mente">Pensar y Sentir</option>
+              <option value="cocina">En la Cocina</option>
+              <option value="estudio">Estudio y Trabajo</option>
+              <option value="limpieza">Limpieza y Hogar</option>
+              <option value="social">Vida Social</option>
+              <option value="opuestos">Verbos Opuestos</option>
+              <option value="basicos">Acciones Básicas</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="exercise-block">
+          <p class="instruction-text" id="instr">SELECCIONA LA CATEGORÍA DE VERBOS</p>
+          
+          <div id="game-ui">
+            <div class="game-area">
+              <div class="column" id="col-en"></div>
+              <div class="column" id="col-es"></div>
+            </div>
+          </div>
+          
+          <div id="win-ui" class="win-message">
+            <h3>EXCELLENT!</h3>
+            <button class="btn-reset-matcher" onclick="initGame2()">NEXT SET</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ========================================================================
+     GAME 1 LOGIC: Sentence Builder
+     ======================================================================== */
+  const poolData = [
+    { q: "Yo necesito comida.", a: ["I", "need", "food"] },
+    { q: "Yo quiero dinero.", a: ["I", "want", "money"] },
+    { q: "Tú y Danny beben cerveza.", a: ["You", "and", "Danny", "drink", "beer"] },
+    { q: "Jenna y yo amamos literatura.", a: ["Jenna", "and", "I", "love", "literature"] },
+    { q: "Jenna y Danny temen alturas.", a: ["Jenna", "and", "Danny", "fear", "heights"] },
+    { q: "Yo amo invierno.", a: ["I", "love", "winter"] },
+    { q: "Tú necesitas equipo.", a: ["You", "need", "equipment"] },
+    { q: "Tú y yo amamos ron.", a: ["You", "and", "I", "love", "rum"] },
+    { q: "Yo traigo pizza.", a: ["I", "bring", "pizza"] },
+    { q: "Tú vendes boletos.", a: ["You", "sell", "tickets"] },
+    { q: "Él compra casas.", a: ["He", "buys", "houses"] },
+    { q: "Nosotros bebemos agua.", a: ["We", "drink", "water"] },
+    { q: "Ella tiene gatos.", a: ["She", "has", "cats"] },
+    { q: "Ellos estudian inglés.", a: ["They", "study", "English"] },
+    { q: "Tú hablas inglés.", a: ["You", "speak", "English"] },
+    { q: "Yo leo libros.", a: ["I", "read", "books"] },
+    { q: "Perros corren.", a: ["Dogs", "run"] },
+    { q: "Nosotros vemos televisión.", a: ["We", "watch", "TV"] },
+    { q: "Ella cocina pasta.", a: ["She", "cooks", "pasta"] },
+    { q: "Tú escribes cartas.", a: ["You", "write", "letters"] }
+  ];
+
+  let currentIndex = 0, score = 0, hasErrored = false, randomizedQuiz = [];
+  const LIMIT = 10;
+
+  function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+  function startQuiz() {
+    randomizedQuiz = shuffle([...poolData]).slice(0, LIMIT);
+    currentIndex = 0; score = 0;
+    renderSkeleton();
+    loadQuestion();
+  }
+
+  function renderSkeleton() {
+    document.getElementById('quiz-ui').innerHTML = `
+      <div class="section-header">
+        <div class="header-title-container">
+          <div class="header-left-group">
+            <div class="logo-bracket"><img src="https://drive.google.com/thumbnail?id=1DQWHMZf7MpnzZBa3CbqqyJGLQEK6U4lZ" alt="Kira"></div>
+            <h2>Sentence Builder</h2>
+          </div>
+          <span id="counter">1/${LIMIT}</span>
+        </div>
+      </div>
+      <div class="exercise-block">
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+        <div class="spanish-hint" id="hint-es"></div>
+        <div class="drop-zone" id="drop-zone"></div>
+        <div class="word-bank" id="word-bank"></div>
+        <div id="feedback" class="feedback"></div>
+        <div class="button-group">
+          <button class="btn btn-reset-builder" onclick="loadQuestion()">Reset</button>
+          <button class="btn btn-check" id="check-btn" onclick="checkSentence()">Check</button>
+          <button class="btn btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+        </div>
+      </div>
+    `;
+    initDragEvents();
+  }
+
+  function loadQuestion() {
+    hasErrored = false;
+    const data = randomizedQuiz[currentIndex];
+    document.getElementById('counter').innerText = `${currentIndex + 1}/${LIMIT}`;
+    document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / LIMIT) * 100}%`;
+    document.getElementById('hint-es').innerText = data.q;
+    document.getElementById('feedback').innerText = '';
+    const dropZone = document.getElementById('drop-zone');
+    dropZone.innerHTML = '';
+    dropZone.classList.remove('is-correct');
+    document.getElementById('check-btn').style.display = "block";
+    document.getElementById('next-btn').style.display = "none";
+    const bank = document.getElementById('word-bank');
+    bank.innerHTML = '';
+    shuffle([...data.a]).forEach(word => createTile(word, bank));
+  }
+
+  function createTile(word, container) {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.innerText = word;
+    tile.draggable = true;
+    tile.onclick = () => {
+      if(document.getElementById('drop-zone').classList.contains('is-correct')) return;
+      const dropZone = document.getElementById('drop-zone');
+      const bank = document.getElementById('word-bank');
+      (tile.parentElement === bank ? dropZone : bank).appendChild(tile);
+      document.getElementById('feedback').innerText = '';
+    };
+    tile.addEventListener('dragstart', () => tile.classList.add('dragging'));
+    tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+    container.appendChild(tile);
+  }
+
+  function initDragEvents() {
+    const containers = [document.getElementById('drop-zone'), document.getElementById('word-bank')];
+    containers.forEach(container => {
+      container.addEventListener('dragover', e => {
+        if(document.getElementById('drop-zone').classList.contains('is-correct')) return;
+        e.preventDefault();
+        const dragging = document.querySelector('.dragging');
+        const afterElement = getDragAfterElement(container, e.clientX);
+        if (afterElement == null) container.appendChild(dragging);
+        else container.insertBefore(dragging, afterElement);
+      });
+    });
+  }
+
+  function getDragAfterElement(container, x) {
+    const draggableElements = [...container.querySelectorAll('.tile:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = x - box.left - box.width / 2;
+      if (offset < 0 && offset > closest.offset) return { offset: offset, element: child };
+      else return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function checkSentence() {
+    const data = randomizedQuiz[currentIndex];
+    const userWords = [...document.getElementById('drop-zone').querySelectorAll('.tile')].map(t => t.innerText);
+    const feedback = document.getElementById('feedback');
+    if (userWords.join(' ') === data.a.join(' ')) {
+      if (!hasErrored) score++;
+      feedback.className = 'feedback correct-text';
+      feedback.innerText = "¡CORRECTO!";
+      document.getElementById('drop-zone').classList.add('is-correct');
+      document.getElementById('check-btn').style.display = "none";
+      document.getElementById('next-btn').style.display = "block";
+      document.querySelectorAll('.tile').forEach(t => t.draggable = false);
+    } else {
+      hasErrored = true;
+      feedback.className = 'feedback wrong-text';
+      feedback.innerText = userWords.length === 0 ? "Selecciona palabras" : "Orden incorrecto";
+    }
+  }
+
+  function nextQuestion() {
+    currentIndex++;
+    currentIndex < randomizedQuiz.length ? loadQuestion() : finishGame();
+  }
+
+  function finishGame() {
+    const isPerfect = score === LIMIT;
+    document.getElementById('quiz-ui').innerHTML = `
+      <div class="section-header">
+        <div class="header-title-container">
+          <div class="header-left-group">
+            <div class="logo-bracket"><img src="https://drive.google.com/thumbnail?id=1DQWHMZf7MpnzZBa3CbqqyJGLQEK6U4lZ" alt="Kira"></div>
+            <h2>Sentence Builder</h2>
+          </div>
+          <span id="counter">${LIMIT}/${LIMIT}</span>
+        </div>
+      </div>
+      <div class="exercise-block">
+        <div class="finish-screen">
+          <h3 style="margin:0; color:#ffc107;">¡COMPLETADO!</h3>
+          <div class="score-circle">${score}/${LIMIT}</div>
+          <p style="font-size:0.9rem; color:#aaa; margin: 0 0 20px 0;">${isPerfect ? "¡Puntaje Perfecto!" : "Sigue practicando."}</p>
+          <button class="btn btn-check ${isPerfect ? 'btn-perfect' : ''}" style="width:100%" onclick="startQuiz()">REINTENTAR</button>
+        </div>
+      </div>`;
+  }
+
+  /* ========================================================================
+     GAME 2 LOGIC: Verb Matcher
+     ======================================================================== */
+  const vocabulary = {
+    rutina: [
+      {en: "Wake up", es: "Despertarse", ph: "/weɪk ʌp/"}, {en: "Get up", es: "Levantarse", ph: "/ɡet ʌp/"}, {en: "Shower", es: "Ducharse", ph: "/ˈʃaʊ.ər/"}, {en: "Brush", es: "Cepillarse", ph: "/brʌʃ/"}, {en: "Shave", es: "Afeitarse", ph: "/ʃeɪv/"}, {en: "Dress", es: "Vestirse", ph: "/dres/"},
+      {en: "Eat", es: "Comer", ph: "/iːt/"}, {en: "Drink", es: "Beber", ph: "/drɪŋk/"}, {en: "Sleep", es: "Dormir", ph: "/sliːp/"}, {en: "Wash", es: "Lavarse", ph: "/wɑːʃ/"}, {en: "Comb", es: "Peinarse", ph: "/koʊm/"}, {en: "Rest", es: "Descansar", ph: "/rest/"},
+      {en: "Exercise", es: "Ejercitar", ph: "/ˈek.sɚ.saɪz/"}, {en: "Work", es: "Trabajar", ph: "/wɝːk/"}, {en: "Study", es: "Estudiar", ph: "/ˈstʌd.i/"}, {en: "Read", es: "Leer", ph: "/riːd/"}, {en: "Write", es: "Escribir", ph: "/raɪt/"}, {en: "Listen", es: "Escuchar", ph: "/ˈlɪs.ən/"},
+      {en: "Watch", es: "Ver", ph: "/wɑːtʃ/"}, {en: "Play", es: "Jugar", ph: "/pleɪ/"}, {en: "Drive", es: "Conducir", ph: "/draɪv/"}, {en: "Walk", es: "Caminar", ph: "/wɔːk/"}, {en: "Buy", es: "Comprar", ph: "/baɪ/"}, {en: "Pray", es: "Rezar", ph: "/preɪ/"},
+      {en: "Sleep", es: "Dormir", ph: "/sliːp/"}, {en: "Snore", es: "Roncar", ph: "/snɔːr/"}, {en: "Relax", es: "Relajarse", ph: "/rɪˈlæks/"}, {en: "Breathe", es: "Respirar", ph: "/briːð/"}, {en: "Wait", es: "Esperar", ph: "/weɪt/"}, {en: "Yawn", es: "Bostezar", ph: "/jɔːn/"}
+    ],
+    comunicacion: [
+      {en: "Speak", es: "Hablar", ph: "/spiːk/"}, {en: "Say", es: "Decir", ph: "/seɪ/"}, {en: "Tell", es: "Contar", ph: "/tel/"}, {en: "Talk", es: "Platicar", ph: "/tɔːk/"}, {en: "Ask", es: "Preguntar", ph: "/æsk/"}, {en: "Answer", es: "Responder", ph: "/ˈæn.sɚ/"},
+      {en: "Shout", es: "Gritar", ph: "/ʃaʊt/"}, {en: "Whisper", es: "Susurrar", ph: "/ˈwɪs.pɚ/"}, {en: "Sing", es: "Cantar", ph: "/sɪŋ/"}, {en: "Call", es: "Llamar", ph: "/kɔːl/"}, {en: "Message", es: "Mensajear", ph: "/ˈmes.ɪdʒ/"}, {en: "Explain", es: "Explicar", ph: "/ɪkˈspleɪn/"},
+      {en: "Promise", es: "Prometer", ph: "/ˈprɑː.mɪs/"}, {en: "Suggest", es: "Sugerir", ph: "/səˈdʒest/"}, {en: "Warn", es: "Advertir", ph: "/wɔːrn/"}, {en: "Invite", es: "Invitar", ph: "/ɪnˈvaɪt/"}, {en: "Repeat", es: "Repetir", ph: "/rɪˈpiːt/"}, {en: "Discuss", es: "Discutir", ph: "/dɪˈskʌs/"},
+      {en: "Offer", es: "Ofrecer", ph: "/ˈɑː.fɚ/"}, {en: "Refuse", es: "Rechazar", ph: "/rɪˈfjuːz/"}, {en: "Agree", es: "Acordar", ph: "/əˈɡriː/"}, {en: "Argue", es: "Pelear", ph: "/ˈɑːrɡ.juː/"}, {en: "Translate", es: "Traducir", ph: "/trænsˈleɪt/"}, {en: "Sign", es: "Firmar", ph: "/saɪn/"},
+      {en: "Complain", es: "Quejarse", ph: "/kəmˈpleɪn/"}, {en: "Advise", es: "Aconsejar", ph: "/ədˈvaɪz/"}, {en: "Chat", es: "Charlar", ph: "/tʃæt/"}, {en: "Joke", es: "Bromear", ph: "/dʒoʊk/"}, {en: "Interrupt", es: "Interrumpir", ph: "/ˌɪn.təˈrʌpt/"}, {en: "Greet", es: "Saludar", ph: "/ɡriːt/"}
+    ],
+    movimiento: [
+      {en: "Run", es: "Correr", ph: "/rʌn/"}, {en: "Jump", es: "Saltar", ph: "/dʒʌmp/"}, {en: "Swim", es: "Nadar", ph: "/swɪm/"}, {en: "Dance", es: "Bailar", ph: "/dæns/"}, {en: "Fly", es: "Volar", ph: "/flaɪ/"}, {en: "Climb", es: "Escalar", ph: "/klaɪm/"},
+      {en: "Fall", es: "Caer", ph: "/fɔːl/"}, {en: "Sit", es: "Sentarse", ph: "/sɪt/"}, {en: "Stand", es: "Pararse", ph: "/stænd/"}, {en: "Push", es: "Empujar", ph: "/pʊʃ/"}, {en: "Pull", es: "Jalar", ph: "/pʊl/"}, {en: "Throw", es: "Lanzar", ph: "/θroʊ/"},
+      {en: "Catch", es: "Atrapar", ph: "/kætʃ/"}, {en: "Turn", es: "Girar", ph: "/tɝːn/"}, {en: "Shake", es: "Sacudir", ph: "/ʃeɪk/"}, {en: "Lift", es: "Levantar", ph: "/lɪft/"}, {en: "Carry", es: "Cargar", ph: "/ˈker.i/"}, {en: "Drop", es: "Soltar", ph: "/drɑːp/"},
+      {en: "Step", es: "Pisar", ph: "/step/"}, {en: "Slide", es: "Deslizar", ph: "/slaɪd/"}, {en: "Kick", es: "Patear", ph: "/kɪk/"}, {en: "Ride", es: "Montar", ph: "/raɪd/"}, {en: "Travel", es: "Viajar", ph: "/ˈtræv.əl/"}, {en: "Arrive", es: "Llegar", ph: "/əˈraɪv/"},
+      {en: "Return", es: "Regresar", ph: "/rɪˈtɜːrn/"}, {en: "Crawl", es: "Gatear", ph: "/krɔːl/"}, {en: "Spin", es: "Girar", ph: "/spɪn/"}, {en: "Escape", es: "Escapar", ph: "/ɪˈskeɪp/"}, {en: "Follow", es: "Seguir", ph: "/ˈfɑː.loʊ/"}, {en: "Pass", es: "Pasar", ph: "/pæs/"}
+    ],
+    mente: [
+      {en: "Think", es: "Pensar", ph: "/θɪŋk/"}, {en: "Believe", es: "Creer", ph: "/bɪˈliːv/"}, {en: "Know", es: "Saber", ph: "/noʊ/"}, {en: "Learn", es: "Aprender", ph: "/lɝːn/"}, {en: "Feel", es: "Sentir", ph: "/fiːl/"}, {en: "Want", es: "Querer", ph: "/wɑːnt/"},
+      {en: "Need", es: "Necesitar", ph: "/niːd/"}, {en: "Hope", es: "Esperar", ph: "/hoʊp/"}, {en: "Remember", es: "Recordar", ph: "/rɪˈmem.bɚ/"}, {en: "Forget", es: "Olvidar", ph: "/fɚˈɡet/"}, {en: "Understand", es: "Entender", ph: "/ˌʌn.dɚˈstænd/"}, {en: "Dream", es: "Soñar", ph: "/driːm/"},
+      {en: "Imagine", es: "Imaginar", ph: "/ɪˈmædʒ.ɪn/"}, {en: "Choose", es: "Elegir", ph: "/tʃuːz/"}, {en: "Plan", es: "Planear", ph: "/plæn/"}, {en: "Decide", es: "Decidir", ph: "/dɪˈsaɪd/"}, {en: "Guess", es: "Adivinar", ph: "/ɡes/"}, {en: "Mean", es: "Significar", ph: "/miːn/"},
+      {en: "Like", es: "Gustar", ph: "/laɪk/"}, {en: "Love", es: "Amar", ph: "/lʌv/"}, {en: "Hate", es: "Odiar", ph: "/heɪt/"}, {en: "Fear", es: "Temer", ph: "/fɪr/"}, {en: "Trust", es: "Confiar", ph: "/trʌst/"}, {en: "Doubt", es: "Dudar", ph: "/daʊt/"},
+      {en: "Notice", es: "Notar", ph: "/ˈnoʊ.tɪs/"}, {en: "Realize", es: "Darse cuenta", ph: "/ˈrɪə.laɪz/"}, {en: "Recognize", es: "Reconocer", ph: "/ˈrek.əɡ.naɪz/"}, {en: "Wonder", es: "Preguntarse", ph: "/ˈwʌn.dɚ/"}, {en: "Suppose", es: "Suponer", ph: "/səˈpoʊz/"}, {en: "Worry", es: "Preocuparse", ph: "/ˈwɝː.i/"}
+    ],
+    cocina: [
+      {en: "Cook", es: "Cocinar", ph: "/kʊk/"}, {en: "Bake", es: "Hornear", ph: "/beɪk/"}, {en: "Fry", es: "Freír", ph: "/fraɪ/"}, {en: "Boil", es: "Hervir", ph: "/bɔɪl/"}, {en: "Cut", es: "Cortar", ph: "/kʌt/"}, {en: "Chop", es: "Picar", ph: "/tʃɑːp/"},
+      {en: "Peel", es: "Pelar", ph: "/piːl/"}, {en: "Mix", es: "Mezclar", ph: "/mɪks/"}, {en: "Stir", es: "Revolver", ph: "/stɝː/"}, {en: "Pour", es: "Verter", ph: "/pɔːr/"}, {en: "Serve", es: "Servir", ph: "/sɝːv/"}, {en: "Taste", es: "Probar", ph: "/teɪst/"},
+      {en: "Wash", es: "Lavar", ph: "/wɑːʃ/"}, {en: "Dry", es: "Secar", ph: "/draɪ/"}, {en: "Clean", es: "Limpiar", ph: "/kliːn/"}, {en: "Heat", es: "Calentar", ph: "/hiːt/"}, {en: "Freeze", es: "Congelar", ph: "/friːz/"}, {en: "Melt", es: "Derretir", ph: "/melt/"},
+      {en: "Break", es: "Romper", ph: "/breɪk/"}, {en: "Open", es: "Abrir", ph: "/ˈoʊ.pən/"}, {en: "Close", es: "Cerrar", ph: "/kloʊz/"}, {en: "Add", es: "Agregar", ph: "/æd/"}, {en: "Grill", es: "Asar", ph: "/ɡrɪl/"}, {en: "Bite", es: "Morder", ph: "/baɪt/"},
+      {en: "Chew", es: "Masticar", ph: "/tʃuː/"}, {en: "Swallow", es: "Tragar", ph: "/ˈswɑː.loʊ/"}, {en: "Slice", es: "Rebanar", ph: "/slaɪs/"}, {en: "Grate", es: "Rallar", ph: "/ɡreɪt/"}, {en: "Steam", es: "Cocer al vapor", ph: "/stiːm/"}, {en: "Roast", es: "Rostizar", ph: "/roʊst/"}
+    ],
+    estudio: [
+      {en: "Study", es: "Estudiar", ph: "/ˈstʌd.i/"}, {en: "Teach", es: "Enseñar", ph: "/tiːtʃ/"}, {en: "Write", es: "Escribir", ph: "/raɪt/"}, {en: "Read", es: "Leer", ph: "/riːd/"}, {en: "Draw", es: "Dibujar", ph: "/drɑː/"}, {en: "Paint", es: "Pintar", ph: "/peɪnt/"},
+      {en: "Spell", es: "Deletrear", ph: "/spel/"}, {en: "Calculate", es: "Calcular", ph: "/ˈkæl.kjə.leɪt/"}, {en: "Search", es: "Buscar", ph: "/sɝːtʃ/"}, {en: "Print", es: "Imprimir", ph: "/prɪnt/"}, {en: "Save", es: "Guardar", ph: "/seɪv/"}, {en: "Type", es: "Teclear", ph: "/taɪp/"},
+      {en: "Present", es: "Presentar", ph: "/prɪˈzent/"}, {en: "Finish", es: "Terminar", ph: "/ˈfɪn.ɪʃ/"}, {en: "Start", es: "Empezar", ph: "/stɑːrt/"}, {en: "Pass", es: "Pasar", ph: "/pæs/"}, {en: "Fail", es: "Reprobar", ph: "/feɪl/"}, {en: "Check", es: "Revisar", ph: "/tʃek/"},
+      {en: "Highlight", es: "Resaltar", ph: "/ˈhaɪ.laɪt/"}, {en: "Erase", es: "Borrar", ph: "/ɪˈreɪs/"}, {en: "Correct", es: "Corregir", ph: "/kəˈrekt/"}, {en: "Practice", es: "Practicar", ph: "/ˈpræk.tɪs/"}, {en: "Organize", es: "Organizar", ph: "/ˈɔːr.ɡən.aɪz/"}, {en: "Work", es: "Trabajar", ph: "/wɝːk/"},
+      {en: "Memorize", es: "Memorizar", ph: "/ˈmem.ə.raɪz/"}, {en: "Review", es: "Repasar", ph: "/rɪˈvjuː/"}, {en: "Translate", es: "Traducir", ph: "/trænsˈleɪt/"}, {en: "Attend", es: "Asistir", ph: "/əˈtend/"}, {en: "Graduate", es: "Graduarse", ph: "/ˈɡrædʒ.u.eɪt/"}, {en: "Research", es: "Investigar", ph: "/ˈriː.sɝːtʃ/"}
+    ],
+    limpieza: [
+      {en: "Clean", es: "Limpiar", ph: "/kliːn/"}, {en: "Sweep", es: "Barrer", ph: "/swiːp/"}, {en: "Mop", es: "Trapear", ph: "/mɑːp/"}, {en: "Dust", es: "Sacudir", ph: "/dʌst/"}, {en: "Wash", es: "Lavar", ph: "/wɑːʃ/"}, {en: "Dry", es: "Secar", ph: "/draɪ/"},
+      {en: "Vacuum", es: "Aspirar", ph: "/ˈvæk.juːm/"}, {en: "Fix", es: "Arreglar", ph: "/fɪks/"}, {en: "Organize", es: "Organizar", ph: "/ˈɔːr.ɡən.aɪz/"}, {en: "Paint", es: "Pintar", ph: "/peɪnt/"}, {en: "Plant", es: "Plantar", ph: "/plænt/"}, {en: "Water", es: "Regar", ph: "/ˈwɔː.tɚ/"},
+      {en: "Throw", es: "Tirar", ph: "/θroʊ/"}, {en: "Collect", es: "Recoger", ph: "/kəˈlekt/"}, {en: "Iron", es: "Planchar", ph: "/ˈaɪ.ɚn/"}, {en: "Fold", es: "Doblar", ph: "/foʊld/"}, {en: "Hang", es: "Colgar", ph: "/hæŋ/"}, {en: "Build", es: "Construir", ph: "/bɪld/"},
+      {en: "Repair", es: "Reparar", ph: "/rɪˈper/"}, {en: "Scrub", es: "Fregar", ph: "/skrʌb/"}, {en: "Polish", es: "Pulir", ph: "/ˈpɑː.lɪʃ/"}, {en: "Change", es: "Cambiar", ph: "/tʃeɪndʒ/"}, {en: "Tidy", es: "Ordenar", ph: "/ˈtaɪ.di/"}, {en: "Empty", es: "Vaciar", ph: "/ˈem.ti/"},
+      {en: "Recycle", es: "Reciclar", ph: "/ˌriːˈsaɪ.kəl/"}, {en: "Decorate", es: "Decorar", ph: "/ˈdek.ə.reɪt/"}, {en: "Spray", es: "Rociar", ph: "/spreɪ/"}, {en: "Wipe", es: "Limpiar/Tallar", ph: "/waɪp/"}, {en: "Rinse", es: "Enjuagar", ph: "/rɪns/"}, {en: "Sew", es: "Coser", ph: "/soʊ/"}
+    ],
+    social: [
+      {en: "Meet", es: "Conocer", ph: "/miːt/"}, {en: "Visit", es: "Visitar", ph: "/ˈvɪz.ɪt/"}, {en: "Help", es: "Ayudar", ph: "/help/"}, {en: "Share", es: "Compartir", ph: "/ʃer/"}, {en: "Give", es: "Dar", ph: "/ɡɪv/"}, {en: "Take", es: "Tomar", ph: "/teɪk/"},
+      {en: "Smile", es: "Sonreír", ph: "/smaɪl/"}, {en: "Laugh", es: "Reír", ph: "/læf/"}, {en: "Hug", es: "Abrazar", ph: "/hʌɡ/"}, {en: "Kiss", es: "Besar", ph: "/kɪs/"}, {en: "Dance", es: "Bailar", ph: "/dæns/"}, {en: "Party", es: "Festejar", ph: "/ˈpɑːr.ti/"},
+      {en: "Listen", es: "Escuchar", ph: "/ˈlɪs.ən/"}, {en: "Wait", es: "Esperar", ph: "/weɪt/"}, {en: "Support", es: "Apoyar", ph: "/səˈpɔːrt/"}, {en: "Gift", es: "Regalar", ph: "/ɡift/"}, {en: "Thank", es: "Agradecer", ph: "/θæŋk/"}, {en: "Care", es: "Cuidar", ph: "/ker/"},
+      {en: "Respect", es: "Respetar", ph: "/rɪˈspekt/"}, {en: "Forgive", es: "Perdonar", ph: "/fɚˈɡɪv/"}, {en: "Welcome", es: "Dar bienvenida", ph: "/ˈwel.kəm/"}, {en: "Leave", es: "Irse", ph: "/liːv/"}, {en: "Enjoy", es: "Disfrutar", ph: "/ɪnˈdʒɔɪ/"}, {en: "Follow", es: "Seguir", ph: "/ˈfɑː.loʊ/"},
+      {en: "Celebrate", es: "Celebrar", ph: "/ˈsel.ə.breɪt/"}, {en: "Borrow", es: "Pedir prestado", ph: "/ˈbɔːr.oʊ/"}, {en: "Lend", es: "Prestar", ph: "/lend/"}, {en: "Marry", es: "Casarse", ph: "/ˈmer.i/"}, {en: "Fight", es: "Pelear", ph: "/faɪt/"}, {en: "Wave", es: "Saludar con mano", ph: "/weɪv/"}
+    ],
+    opuestos: [
+      {en: "Begin", es: "Empezar", ph: "/bɪˈɡɪn/"}, {en: "End", es: "Terminar", ph: "/end/"}, {en: "Open", es: "Abrir", ph: "/ˈoʊ.pən/"}, {en: "Close", es: "Cerrar", ph: "/kloʊz/"}, {en: "Push", es: "Empujar", ph: "/pʊʃ/"}, {en: "Pull", es: "Jalar", ph: "/pʊl/"},
+      {en: "Win", es: "Ganar", ph: "/wɪn/"}, {en: "Lose", es: "Perder", ph: "/luːz/"}, {en: "Buy", es: "Comprar", ph: "/baɪ/"}, {en: "Sell", es: "Vender", ph: "/sel/"}, {en: "Come", es: "Venir", ph: "/kʌm/"}, {en: "Go", es: "Ir", ph: "/ɡoʊ/"},
+      {en: "Ask", es: "Preguntar", ph: "/æsk/"}, {en: "Answer", es: "Responder", ph: "/ˈæn.sɚ/"}, {en: "Live", es: "Vivir", ph: "/lɪv/"}, {en: "Die", es: "Morir", ph: "/daɪ/"}, {en: "Stand", es: "Pararse", ph: "/stænd/"}, {en: "Sit", es: "Sentarse", ph: "/sɪt/"},
+      {en: "Give", es: "Dar", ph: "/ɡɪv/"}, {en: "Receive", es: "Recibir", ph: "/rɪˈsiːv/"}, {en: "Show", es: "Mostrar", ph: "/ʃoʊ/"}, {en: "Hide", es: "Esconder", ph: "/haɪd/"}, {en: "Cry", es: "Llorar", ph: "/kraɪ/"}, {en: "Laugh", es: "Reír", ph: "/læf/"},
+      {en: "Love", es: "Amar", ph: "/lʌv/"}, {en: "Hate", es: "Odiar", ph: "/heɪt/"}, {en: "Remember", es: "Recordar", ph: "/rɪˈmem.bɚ/"}, {en: "Forget", es: "Olvidar", ph: "/fɚˈɡet/"}, {en: "Arrive", es: "Llegar", ph: "/əˈraɪv/"}, {en: "Leave", es: "Irse", ph: "/liːv/"}
+    ],
+    basicos: [
+      {en: "Be", es: "Ser/Estar", ph: "/biː/"}, {en: "Have", es: "Tener", ph: "/hæv/"}, {en: "Do", es: "Hacer", ph: "/duː/"}, {en: "Make", es: "Hacer/Crear", ph: "/meɪk/"}, {en: "Go", es: "Ir", ph: "/ɡoʊ/"}, {en: "Get", es: "Obtener", ph: "/ɡet/"},
+      {en: "See", es: "Ver", ph: "/siː/"}, {en: "Look", es: "Mirar", ph: "/lʊk/"}, {en: "Hear", es: "Oír", ph: "/hɪr/"}, {en: "Listen", es: "Escuchar", ph: "/ˈlɪs.ən/"}, {en: "Use", es: "Usar", ph: "/juːz/"}, {en: "Keep", es: "Mantener", ph: "/kiːp/"},
+      {en: "Find", es: "Encontrar", ph: "/faɪnd/"}, {en: "Try", es: "Intentar", ph: "/traɪ/"}, {en: "Help", es: "Ayudar", ph: "/help/"}, {en: "Let", es: "Dejar/Permitir", ph: "/let/"}, {en: "Call", es: "Llamar", ph: "/kɔːl/"}, {en: "Wait", es: "Esperar", ph: "/weɪt/"},
+      {en: "Feel", es: "Sentir", ph: "/fiːl/"}, {en: "Start", es: "Empezar", ph: "/stɑːrt/"}, {en: "Stop", es: "Detener", ph: "/stɑːp/"}, {en: "Hold", es: "Sostener", ph: "/hoʊld/"}, {en: "Move", es: "Mover", ph: "/muːv/"}, {en: "Bring", es: "Traer", ph: "/brɪŋ/"},
+      {en: "Want", es: "Querer", ph: "/wɑːnt/"}, {en: "Think", es: "Pensar", ph: "/θɪŋk/"}, {en: "Should", es: "Debería", ph: "/ʃʊd/"}, {en: "Can", es: "Poder", ph: "/kæn/"}, {en: "Will", es: "Voluntad/Futuro", ph: "/wɪl/"}, {en: "Take", es: "Tomar", ph: "/teɪk/"}
+    ]
+  };
+
+  let seenIndices = {}; 
+  let selectedEn = null;
+  let selectedEs = null;
+  let matchesFound = 0;
+  let currentMatchesRequired = 6;
+
+  function resetCategoryAndInit() {
+    const cat = document.getElementById('category-select').value;
+    seenIndices[cat] = [];
+    initGame2();
+  }
+
+  function initGame2() {
+    const cat = document.getElementById('category-select').value;
+    const fullList = vocabulary[cat];
+    if (!seenIndices[cat]) seenIndices[cat] = [];
+    let available = fullList.filter((_, index) => !seenIndices[cat].includes(index));
+    if (available.length < 3) { seenIndices[cat] = []; available = fullList; }
+
+    currentMatchesRequired = Math.min(available.length, 6);
+    const roundData = available.sort(() => 0.5 - Math.random()).slice(0, currentMatchesRequired);
+
+    roundData.forEach(item => {
+      const idx = fullList.findIndex(f => f.en === item.en);
+      seenIndices[cat].push(idx);
+    });
+
+    const enWords = [...roundData].sort(() => 0.5 - Math.random());
+    const esWords = [...roundData].sort(() => 0.5 - Math.random());
+
+    document.getElementById('col-en').innerHTML = '';
+    document.getElementById('col-es').innerHTML = '';
+    document.getElementById('game-ui').style.display = 'block';
+    document.getElementById('win-ui').style.display = 'none';
+    
+    selectedEn = null; selectedEs = null; matchesFound = 0;
+    enWords.forEach(item => createBtn(item, 'en', 'col-en'));
+    esWords.forEach(item => createBtn(item, 'es', 'col-es'));
+  }
+
+  function createBtn(item, type, colId) {
+    const btn = document.createElement('div');
+    btn.className = 'word-btn';
+    btn.innerText = type === 'en' ? item.en : item.es;
+    btn.dataset.value = type === 'en' ? item.en : item.es;
+    btn.dataset.pair = type === 'en' ? item.es : item.en;
+    btn.dataset.phonetic = item.ph;
+    btn.onclick = () => handleSelect(btn, type);
+    document.getElementById(colId).appendChild(btn);
+  }
+
+  function handleSelect(btn, type) {
+    if (btn.classList.contains('revealed-ph') || btn.classList.contains('vanished') || btn.classList.contains('selected')) return;
+    
+    if (type === 'en') { 
+      if (selectedEn) selectedEn.classList.remove('selected'); 
+      selectedEn = btn; 
+    } else { 
+      if (selectedEs) selectedEs.classList.remove('selected'); 
+      selectedEs = btn; 
+    }
+    btn.classList.add('selected');
+
+    if (selectedEn && selectedEs) {
+      if (selectedEn.dataset.pair === selectedEs.dataset.value) {
+        const sEn = selectedEn; const sEs = selectedEs;
+        selectedEn = null; selectedEs = null;
+        sEn.innerText = sEn.dataset.phonetic;
+        sEn.classList.remove('selected');
+        sEn.classList.add('revealed-ph');
+        sEs.classList.add('vanished');
+        matchesFound++;
+        if (matchesFound === currentMatchesRequired) setTimeout(showWin2, 4000);
+      } else {
+        const tEn = selectedEn; const tEs = selectedEs;
+        selectedEn = null; selectedEs = null;
+        tEn.classList.add('error'); tEs.classList.add('error');
+        setTimeout(() => { tEn.classList.remove('selected', 'error'); tEs.classList.remove('selected', 'error'); }, 400);
+      }
+    }
+  }
+
+  function showWin2() {
+    document.getElementById('game-ui').style.display = 'none';
+    document.getElementById('win-ui').style.display = 'block';
+  }
+
+  /* ========================================================================
+     MASTER INITIALIZER
+     ======================================================================== */
+  window.addEventListener('DOMContentLoaded', () => {
+    startQuiz(); // Fire Game 1 Engine Loop
+    initGame2();  // Fire Game 2 Engine Loop
+  });
+</script>
+</body>
+</html>
